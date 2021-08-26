@@ -17,30 +17,30 @@ console.log('=====================================\n');
 utils.clearDirectory('logs');
 utils.clearDirectory('outputs');
 
-// const pointsAllocations = [];
+const pointsAllocations = [];
 
-// const tempRounds = rounds.map(round => ({
-//     ...round,
-//     session_results: round.session_results.map(session => ({
-//       ...session,
-//       results: session.results.filter(result => constants.divisions.Pro.includes(result.display_name)),
-//     }))
-//   }
-// ));
+const tempRounds = rounds.map(round => ({
+    ...round,
+    session_results: round.session_results.map(session => ({
+      ...session,
+      results: session.results.filter(result => constants.divisions.Pro.includes(result.display_name)),
+    }))
+  }
+));
 
-// utils.writeJson('./logs/tmp.json', tempRounds);
+utils.writeJson('./logs/tmp.json', tempRounds);
 
-// operations.forEach(operation => {
-//   console.log('Applying operation:', operation.name);
-//   const allocations = operation(tempRounds);
-//   pointsAllocations.push(...allocations);
-//   utils.writeJson(`./logs/${operation.name}.json`, allocations);
-// });
+operations.forEach(operation => {
+  console.log('Applying operation:', operation.name);
+  const allocations = operation(tempRounds);
+  pointsAllocations.push(...allocations);
+  utils.writeJson(`./logs/${operation.name}.json`, allocations);
+});
 
-// // log allocations
-// utils.writeJson('./logs/points-allocations.json', pointsAllocations);
+// log allocations
+utils.writeJson('./logs/points-allocations.json', pointsAllocations);
 
-// const standings = utils.generateStandings(pointsAllocations);
-// utils.writeJson('./outputs/standings.json', standings);
+const standings = utils.generateStandings(pointsAllocations);
+utils.writeJson('./outputs/standings.json', standings);
 
-// console.log('Done');
+console.log('Done');
