@@ -2,6 +2,7 @@ const utils = require('./utils');
 const operations = require('./operations');
 const constants = require('./constants');
 
+// TODO: Read all files from /inputs directory instead of explicitly importing each file.
 const rounds = [
   require('./inputs/round-1.json'),
   require('./inputs/round-2.json'),
@@ -14,6 +15,7 @@ console.log('\n=====================================');
 console.log('======== STANDINGS GENERATOR ========');
 console.log('=====================================\n');
 
+// TODO: Check that these directorys exist - create them if they don't.
 utils.clearDirectory('logs');
 utils.clearDirectory('outputs');
 
