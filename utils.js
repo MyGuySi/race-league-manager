@@ -2,20 +2,18 @@ const fs = require('fs');
 const path = require('path');
 
 function clearDirectory(directory) {
-  fs.readdirSync(directory, (err, files) => {
-    console.log('read directory', directory);
-    if (err) throw err;
-    for (const file of files) {
-      fs.unlinkSync(path.join(directory, file), err => {
-        console.log('deleted file', file);
-        if (err) throw err;
-      });
-    }
-  });
+  const files = fs.readdirSync(directory);
+  for (const file of files) {
+    fs.unlinkSync(path.join(directory, file));
+  }
 }
 
 function writeJson(outputPath, data) {
   fs.writeFileSync(outputPath, JSON.stringify(data, null, 4));
+}
+
+function writeData(outputPath, data) {
+  fs.writeFileSync(outputPath, data);
 }
 
 function getRaceSession(sessions) {
@@ -26,13 +24,13 @@ function getRaceSession(sessions) {
   return raceSession;
 }
 
-function generateStandings(allocations) {
+function generateStandings(allocations, scope) {
   const drivers = allocations.reduce((standings, allocation) => {
-    const [driverId, name, points] = allocation;
-    if (!standings[driverId]) {
-      standings[driverId] = { id: driverId, name, points: 0 };
+    const { id, name, points } = allocation;
+    if (!standings[id]) {
+      standings[id] = { id, name, points: 0 };
     }
-    standings[driverId].points += points;
+    standings[id].points += points;
     return standings;
   }, {});
   return Object.values(drivers).sort((a, b) => {
@@ -42,9 +40,21 @@ function generateStandings(allocations) {
   });
 }
 
+function jsToCsv(data) {
+  const replacer = (key, value) => value === null ? '-' : value // specify how you want to handle null values here
+  const header = Object.keys(data[0])
+  const csv = [
+    header.join(','), // header row first
+    ...data.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+  ].join('\r\n')
+  return csv;
+}
+
 module.exports = {
   clearDirectory,
   writeJson,
+  writeData,
   getRaceSession,
   generateStandings,
+  jsToCsv,
 };

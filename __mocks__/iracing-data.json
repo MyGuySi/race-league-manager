@@ -1,0 +1,37 @@
+{
+  "event_laps_complete": 100,
+  "track": {
+    "track_name": "Test Track"
+  },
+  "session_results": [
+    {
+      "simsession_name": "RACE",
+      "results": [
+        {
+          "cust_id": 101,
+          "display_name": "Driver 1",
+          "finish_position": 0,
+          "laps_complete": 100,
+          "best_lap_time": 100,
+          "starting_position": 2
+        },
+        {
+          "cust_id": 102,
+          "display_name": "Driver 2",
+          "finish_position": 1,
+          "laps_complete": 100,
+          "best_lap_time": 200,
+          "starting_position": 0
+        },
+        {
+          "cust_id": 103,
+          "display_name": "Driver 3",
+          "finish_position": 2,
+          "laps_complete": 50,
+          "best_lap_time": 300,
+          "starting_position": 1
+        }
+      ]
+    }
+  ]
+}

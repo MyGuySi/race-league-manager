@@ -1,17 +1,19 @@
 const utils = require('./utils');
 const operations = require('./operations');
+const parser = require('./parser');
 const constants = require('./constants');
 
 // TODO: Read all files from /inputs directory instead of explicitly importing each file.
-const rounds = [
+const data = [
   require('./inputs/round-1.json'),
   require('./inputs/round-2.json'),
   require('./inputs/round-3.json'),
   require('./inputs/round-4.json'),
   require('./inputs/round-5.json'),
+  require('./inputs/round-6.json'),
 ];
 
-console.log('\n=====================================');
+console.log('=====================================');
 console.log('======== STANDINGS GENERATOR ========');
 console.log('=====================================\n');
 
@@ -19,30 +21,44 @@ console.log('=====================================\n');
 utils.clearDirectory('logs');
 utils.clearDirectory('outputs');
 
-const pointsAllocations = [];
+function processSeason(rounds, operations, outputName) {
+  const allAllocations = [];
+  operations.forEach(operation => {
+    console.log('Applying operation:', operation.name);
+    allocations = operation(rounds);
+    // utils.writeJson(`./logs/${outputName}-${operation.name}.json`, allocations);
+    // utils.writeData(`./logs/${outputName}-${operation.name}.csv`, utils.jsToCsv(allocations));
+    allAllocations.push(...allocations);
+  });
+  // utils.writeJson(`./logs/${outputName}-allocations.json`, allAllocations);
+  // utils.writeData(`./logs/${outputName}-allocations.csv`, utils.jsToCsv(allAllocations));
+  const standings = utils.generateStandings(allAllocations);
+  utils.writeJson(`./outputs/${outputName}-standings.json`, standings);
+  utils.writeData(`./outputs/${outputName}-standings.csv`, utils.jsToCsv(standings));
+}
 
-const tempRounds = rounds.map(round => ({
-    ...round,
-    session_results: round.session_results.map(session => ({
-      ...session,
-      results: session.results.filter(result => constants.divisions.Pro.includes(result.display_name)),
-    }))
-  }
-));
+processSeason(
+  data.map(d => parser.parseRace(d)),
+  [
+    operations.polePosition,
+    operations.racePosition,
+    operations.fastestLap,
+    operations.dropRound,
+  ],
+  'overall'
+);
 
-utils.writeJson('./logs/tmp.json', tempRounds);
-
-operations.forEach(operation => {
-  console.log('Applying operation:', operation.name);
-  const allocations = operation(tempRounds);
-  pointsAllocations.push(...allocations);
-  utils.writeJson(`./logs/${operation.name}.json`, allocations);
+constants.divisions.forEach(division => {
+  processSeason(
+    data.map(d => parser.parseRace(d, division)),
+    [
+      operations.polePosition,
+      operations.racePosition,
+      operations.fastestLap,
+      operations.dropRound,
+    ],
+    division.name
+  );
 });
 
-// log allocations
-utils.writeJson('./logs/points-allocations.json', pointsAllocations);
-
-const standings = utils.generateStandings(pointsAllocations);
-utils.writeJson('./outputs/standings.json', standings);
-
-console.log('Done');
+console.log('Done\n');
